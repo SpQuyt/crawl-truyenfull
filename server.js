@@ -12,6 +12,10 @@ const fs = require('fs');
 
 const truyenURL = 'https://truyenfull.vn/tien-nghich/chuong-';
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 class Crawler {
   // constructor() {
   //   this.headerList = [];
@@ -19,61 +23,89 @@ class Crawler {
   // }
 
   async crawl1Chapter(counter) {
-    const res = await https.get(truyenURL + counter + '/')
-    const ele = parser.parseFromString(res.text, "text/html");
-    const dom = new JSDOM(ele.rawHTML);
-    const header = dom.window.document.getElementsByClassName('chapter-title')[0].getAttribute("title").split('- ')[1];
-    const body = dom.window.document.getElementsByClassName('chapter-c')[0].innerHTML
+    try {
+      const res = await https.get(truyenURL + counter + '/')
+      const ele = parser.parseFromString(res.text, "text/html");
+      const dom = new JSDOM(ele.rawHTML);
+      const header = dom.window.document.getElementsByClassName('chapter-title')[0].getAttribute("title").split('- ')[1];
+      const body = dom.window.document.getElementsByClassName('chapter-c')[0].innerHTML
         .replace(/<i>|<\/i>|<b>|<\/b>/g, '')
         .split("<br>&nbsp;<br>");
 
-    console.log(header);
-    return ({
-      header: header,
-      body: body,
-    })
+      console.log("Đang tải chương " + counter + "...");
+
+      return ({
+        header: header,
+        body: body,
+      });
+    } catch (err) {
+      if (err.status == 503) {
+        this.crawl1Chapter(counter);
+      }
+    }
+
+
+
+    // try {
+
+    // } catch (err) {
+    //   console.log("OH NO")
+    //   return null;
+    // }
   }
 
   async crawlAllChapters(beginChap, endChap) {
     let chapterList = [];
-    // chapterList.push(this.crawl1Chapter(beginChap));
-    // chapterList.push(this.crawl1Chapter(beginChap+1));
-    // chapterList.push(await this.crawl1Chapter(beginChap+2));
-    for (var i = beginChap; i < endChap - beginChap + 1; i++) {
-      chapterList.push(this.crawl1Chapter(beginChap));
+    for (var i = beginChap; i <= endChap; i++) {
+      let chapter = await this.crawl1Chapter(i);
+
+      if (i%5 == 0) {
+        await sleep(3000);
+      }
+
+      if (chapter == null) {
+        break;
+      }
+      else {
+        chapterList.push(chapter);
+      }
+
     }
     return chapterList;
   }
 
   async writeDoc() {
-    // let chapterList = await this.crawlAllChapters(1017, 1019);
-    // console.log(chapterList);
+    let chapterList = await this.crawlAllChapters(1017, 1976);
 
-    // let docx = officegen('docx');
+    let docx = officegen('docx');
 
-    // for (let i = 0; i < this.headerList.length; i++) {
-    //   let pObj = docx.createP();
+    for (const chapter of chapterList) {
+      let pObj = docx.createP();
 
-    //   //Add header
-    //   pObj.addText(this.headerList[i], { bold: true, font_size: 24 });
-    //   pObj.addLineBreak();
-    //   pObj.addLineBreak();
+      //Add header
+      pObj.addText(chapter.header, { bold: true, font_size: 24 });
+      pObj.addLineBreak();
+      pObj.addLineBreak();
 
-    //   //Add body
-    //   pObj.addText(this.bodyList[i].text, { font_face: 'Arial' });
-    //   pObj.addLineBreak();
-    //   pObj.addLineBreak();
-    // }
+      //Add body
+      for (const paragraph of chapter.body) {
+        pObj.addText(paragraph, { font_face: 'Arial' });
+        pObj.addLineBreak();
+        pObj.addLineBreak();
+      }
 
-    // let out = fs.createWriteStream('Tien-Nghich.docx');
+      docx.putPageBreak();
+    }
 
-    // out.on('error', function (err) {
-    //   console.log(err)
-    // });
+    let out = fs.createWriteStream('Tien-Nghich.docx');
 
-    // docx.generate(out);
+    out.on('error', function (err) {
+      console.log(err)
+    });
 
-    // console.log('DONE!')
+    docx.generate(out);
+
+    console.log('DONE!')
   }
 }
 
@@ -85,9 +117,10 @@ app.get('/', (req, res) => {
 
 })
 
-console.log(crawler.crawlAllChapters(1017,1019));
+// console.log(crawler.crawlAllChapters(1017,1019));
 // crawler.crawlAllChapters(1017,1019);
-// crawler.crawl1Chapter(1018);
+// crawler.crawl1Chapter(1989);
+crawler.writeDoc();
 
 app.listen(port, (err) => {
   if (err) throw err;
