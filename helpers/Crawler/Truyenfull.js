@@ -1,14 +1,15 @@
-const https = require("superagent");
-const DomParser = require('dom-parser');
+import https from 'superagent';
+import DomParser from 'dom-parser';
+import jsdom from 'jsdom';
+import officegen from 'officegen';
+import fs from 'fs';
+
 const parser = new DomParser();
-const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
-const officegen = require('officegen');
-const fs = require('fs');
 
 const truyenFullURL = 'https://truyenfull.vn/';
 
-function sleep(ms) {
+const sleep = (ms) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -155,14 +156,18 @@ class Truyenfull {
       for (let i = 1; i <= lastPageIndex; i++) {
         let newPage = await this.crawlAllStoryInfo1Page(category, i)
         if (i % 5 == 0) {
-          await sleep(1000);
+          await sleep(100);
         }
-        storyListAllPages.push(newPage);
+
+        for(const story of newPage) {
+          storyListAllPages.push(story);
+        }
       }
     } catch (err) {
       console.log(err);
     }
 
+    console.log(`==> Tổng cộng có ${storyListAllPages.length} truyện thuộc thể loại ${category}`);
     return storyListAllPages;
   }
 }
