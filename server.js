@@ -17,11 +17,12 @@ app.get('/download', (req, res) => {
 
 // console.log(truyenfull.crawlAllChapters('tien-nghich', 1017, 1019));
 // truyenfull.crawlAllChapters('tien-nghich', 1017, 1019);
-// truyenfull.crawl1Chapter('tien-nghich', 1017);
-// Truyenfull.crawlAllStoryInfo1Page('tien-hiep', 3);
+// truyenfull.crawl1Chapter('nhau-nhau', 1017);
+// truyenfull.crawlAllStoryInfo1Page('tien-hiep', 3);
 // truyenfull.crawlAllStoryInfoAllPages('trong-sinh');
-// truyenfull.writeDoc('tien-nghich', 1017, 1019);
-truyenfull.writeDoc('vu-dong-can-khon', 1017, 1019);
+truyenfull.writeTxt('tien-nghich', 1017, 1019);
+// truyenfull.writeDoc('vu-dong-can-khon', 1017, 1019);
+// truyenfull.writeDoc('linh-vu-thien-ha', 1017, 1019);
 // myregex.convertUTF8('Dị Nhân Tu Chân Đa Thế Giới');
 
 app.listen(port, (err) => {

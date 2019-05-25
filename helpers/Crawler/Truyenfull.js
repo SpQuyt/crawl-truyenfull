@@ -90,22 +90,60 @@ class Truyenfull {
     }
 
     //create folder
-    let path = `${__dirname}/../../downloadable/${title}/truyenfull`;
+    let pathFolder = `${__dirname}/../../downloadable/${title}/truyenfull`;
+    let pathDoc = `${__dirname}/../../downloadable/${title}/truyenfull/${title}-${beginChap}-${endChap}.docx`;
     try {
-      fs.mkdirSync(path.split(`/truyenfull`)[0]);
-      fs.mkdirSync(path);
+      fs.mkdirSync(pathFolder.split(`/truyenfull`)[0]);
+      fs.mkdirSync(pathFolder);
     } catch (err) {
       console.log('\nFolder đã tồn tại!');
     }
 
     //create .docx file at the destined path
-    let out = fs.createWriteStream(`${__dirname}/../../downloadable/${title}/truyenfull/${title}.docx`);
-    out.on('error', function (err) {
-      console.log(err)
+    let out = fs.createWriteStream(pathDoc);
+    out.on('error', (err) => {
+      console.log(err);
     });
 
     docx.generate(out);
     console.log('Đã xong file .docx!');
+  }
+
+  async writeTxt(title, beginChap, endChap) {
+    let chapterList = await this.crawlAllChapters(title, beginChap, endChap);
+
+    //create folder
+    let pathFolder = `${__dirname}/../../downloadable/${title}/truyenfull`;
+    let pathTxt = `${pathFolder}/${title}-${beginChap}-${endChap}.txt`;
+    try {
+      fs.mkdirSync(pathFolder.split(`/truyenfull`)[0]);
+      fs.mkdirSync(pathFolder);
+    } catch (err) {
+      console.log('\nFolder đã tồn tại!');
+    }
+
+    //create .txt file at the destined path
+    if (fs.existsSync(pathTxt)) {           //check if file already existed?
+      try {
+        fs.unlink(pathTxt);
+      } catch (err) {
+        console.log(err);
+      }
+      
+    }
+    for (const chapter of chapterList) {
+      fs.appendFile(pathTxt, `${chapter.header}\n\n`, (err) => {
+        if (err) console.log(err);
+      });
+      for (const paragraph of chapter.body) {
+        fs.appendFile(pathTxt, `${paragraph}\n\n`, (err) => {
+          if (err) console.log(err);
+        });
+      }
+      fs.appendFile(pathTxt, `\n\n\n\n\n\n`, (err) => {
+        if (err) console.log(err);
+      });
+    }
   }
 
   async getLastPageIndex(category) {
