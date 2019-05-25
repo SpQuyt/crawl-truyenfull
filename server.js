@@ -6,21 +6,22 @@ import MyRegEx from './helpers/MyRegEx';
 const app = express();
 const port = 3000;
 
-let truyenfull = new Truyenfull();
-let myregex = new MyRegEx();
+var truyenfull = new Truyenfull();
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => {
-
+app.get('/download', (req, res) => {
+  const file = `${__dirname}/downloadable/tien-nghich/truyenfull/tien-nghich.docx`;
+  res.download(file);
 })
 
 // console.log(truyenfull.crawlAllChapters('tien-nghich', 1017, 1019));
 // truyenfull.crawlAllChapters('tien-nghich', 1017, 1019);
-// truyenfull.crawl1Chapter('nhau-nhau', 1989);
-// truyenfull.crawlAllStoryInfo1Page('tien-hiep', 3);
-truyenfull.crawlAllStoryInfoAllPages('trong-sinh');
+// truyenfull.crawl1Chapter('tien-nghich', 1017);
+// Truyenfull.crawlAllStoryInfo1Page('tien-hiep', 3);
+// truyenfull.crawlAllStoryInfoAllPages('trong-sinh');
 // truyenfull.writeDoc('tien-nghich', 1017, 1019);
+truyenfull.writeDoc('vu-dong-can-khon', 1017, 1019);
 // myregex.convertUTF8('Dị Nhân Tu Chân Đa Thế Giới');
 
 app.listen(port, (err) => {

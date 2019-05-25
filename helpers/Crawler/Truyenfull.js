@@ -17,14 +17,18 @@ class Truyenfull {
 
   async crawl1Chapter(title, index) {
     try {
-      const res = await https.get(`${truyenFullURL}${name}/chuong-${index}/`)
+      const res = await https.get(`${truyenFullURL}${title}/chuong-${index}/`);
       const ele = parser.parseFromString(res.text, 'text/html');
       const dom = new JSDOM(ele.rawHTML);
       const header = dom.window.document.getElementsByClassName('chapter-title')[0].getAttribute("title")
         .split('- ')[1];
+
+      //replace all <br> tags to '<<' to split the paragraph easier
       const body = dom.window.document.getElementsByClassName('chapter-c')[0].innerHTML
         .replace(/<i>|<\/i>|<b>|<\/b>/g, '')
-        .split('<br>&nbsp;<br>');
+        .replace(/<br>&nbsp;<br>/g, '<<')
+        .replace(/<br><br>/g, '<<')
+        .split('<<');
 
       console.log(`Đang tải chương ${index}...`);
 
@@ -38,6 +42,9 @@ class Truyenfull {
       }
       else if (err.status == 404) {
         console.log(`Story ${title} not found!`);
+      }
+      else {
+        console.log(err);
       }
     }
   }
@@ -59,7 +66,6 @@ class Truyenfull {
       }
     }
 
-    console.log('DONE return ChapterList!')
     return chapterList;
   }
 
@@ -83,13 +89,23 @@ class Truyenfull {
       docx.putPageBreak();
     }
 
-    let out = fs.createWriteStream('Tien-Nghich.docx');
+    //create folder
+    let path = `${__dirname}/../../downloadable/${title}/truyenfull`;
+    try {
+      fs.mkdirSync(path.split(`/truyenfull`)[0]);
+      fs.mkdirSync(path);
+    } catch (err) {
+      console.log('\nFolder đã tồn tại!');
+    }
+
+    //create .docx file at the destined path
+    let out = fs.createWriteStream(`${__dirname}/../../downloadable/${title}/truyenfull/${title}.docx`);
     out.on('error', function (err) {
       console.log(err)
     });
 
     docx.generate(out);
-    console.log('DONE Write doc!')
+    console.log('Đã xong file .docx!');
   }
 
   async getLastPageIndex(category) {
@@ -159,7 +175,7 @@ class Truyenfull {
           await sleep(100);
         }
 
-        for(const story of newPage) {
+        for (const story of newPage) {
           storyListAllPages.push(story);
         }
       }
