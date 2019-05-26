@@ -15,7 +15,7 @@ const sleep = (ms) => {
 
 class Truyenfull {
 
-  async crawl1Chapter(title, index) {
+  static async crawl1Chapter(title, index) {
     try {
       const res = await https.get(`${truyenFullURL}${title}/chuong-${index}/`);
       const ele = parser.parseFromString(res.text, 'text/html');
@@ -49,7 +49,7 @@ class Truyenfull {
     }
   }
 
-  async crawlAllChapters(title, beginChap, endChap) {
+  static async crawlAllChapters(title, beginChap, endChap) {
     let chapterList = [];
     for (var i = beginChap; i <= endChap; i++) {
       let chapter = await this.crawl1Chapter(title, i);
@@ -69,7 +69,7 @@ class Truyenfull {
     return chapterList;
   }
 
-  async writeDoc(title, beginChap, endChap) {
+  static async writeDoc(title, beginChap, endChap) {
     let chapterList = await this.crawlAllChapters(title, beginChap, endChap);
     let docx = officegen('docx');
 
@@ -93,10 +93,15 @@ class Truyenfull {
     let pathFolder = `${__dirname}/../../downloadable/${title}/truyenfull`;
     let pathDoc = `${__dirname}/../../downloadable/${title}/truyenfull/${title}-${beginChap}-${endChap}.docx`;
     try {
+      fs.mkdirSync(pathFolder.split(`/${title}`)[0]);
+    } catch (err) {
+      console.log(`\nFolder downloadable đã tồn tại!`);
+    }
+    try {
       fs.mkdirSync(pathFolder.split(`/truyenfull`)[0]);
       fs.mkdirSync(pathFolder);
     } catch (err) {
-      console.log('\nFolder đã tồn tại!');
+      console.log('\nFolder truyenfull đã tồn tại!');
     }
 
     //create .docx file at the destined path
@@ -109,17 +114,22 @@ class Truyenfull {
     console.log('Đã xong file .docx!');
   }
 
-  async writeTxt(title, beginChap, endChap) {
+  static async writeTxt(title, beginChap, endChap) {
     let chapterList = await this.crawlAllChapters(title, beginChap, endChap);
 
     //create folder
     let pathFolder = `${__dirname}/../../downloadable/${title}/truyenfull`;
     let pathTxt = `${pathFolder}/${title}-${beginChap}-${endChap}.txt`;
     try {
+      fs.mkdirSync(pathFolder.split(`/${title}`)[0]);
+    } catch (err) {
+      console.log(`\nFolder downloadable đã tồn tại!`)
+    }
+    try {
       fs.mkdirSync(pathFolder.split(`/truyenfull`)[0]);
       fs.mkdirSync(pathFolder);
     } catch (err) {
-      console.log('\nFolder đã tồn tại!');
+      console.log('\nFolder truyenfull đã tồn tại!');
     }
 
     //create .txt file at the destined path
@@ -129,7 +139,7 @@ class Truyenfull {
       } catch (err) {
         console.log(err);
       }
-      
+
     }
     for (const chapter of chapterList) {
       fs.appendFile(pathTxt, `${chapter.header}\n\n`, (err) => {
@@ -146,7 +156,7 @@ class Truyenfull {
     }
   }
 
-  async getLastPageIndex(category) {
+  static async getLastPageIndex(category) {
     let page = 1;
     try {
       const res = await https.get(`${truyenFullURL}the-loai/${category}/trang-${page}/`);
@@ -168,7 +178,7 @@ class Truyenfull {
     }
   }
 
-  async crawlAllStoryInfo1Page(category, page) {
+  static async crawlAllStoryInfo1Page(category, page) {
     try {
       const res = await https.get(`${truyenFullURL}the-loai/${category}/trang-${page}/`);
       const ele = parser.parseFromString(res.text, 'text/html');
@@ -197,7 +207,7 @@ class Truyenfull {
     }
   }
 
-  async crawlAllStoryInfoAllPages(category) {
+  static async crawlAllStoryInfoAllPages(category) {
     let lastPageIndex = null;
     try {
       lastPageIndex = await this.getLastPageIndex(category);

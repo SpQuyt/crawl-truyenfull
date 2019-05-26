@@ -1,0 +1,11 @@
+import https from 'superagent';
+import DomParser from 'dom-parser';
+import jsdom from 'jsdom';
+import officegen from 'officegen';
+import fs from 'fs';
+
+class TruyenCV {
+  static async crawl1Page(title, index) {
+    
+  }
+}
