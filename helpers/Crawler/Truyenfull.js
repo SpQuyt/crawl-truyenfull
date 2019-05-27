@@ -29,7 +29,7 @@ class Truyenfull {
         .replace(/<br>&nbsp;<br>/g, '<<')
         .replace(/<br><br>/g, '<<')
         .split('<<');
-
+        
       console.log(`Đang tải chương ${index}...`);
 
       return ({
