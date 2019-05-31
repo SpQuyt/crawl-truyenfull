@@ -4,16 +4,18 @@ import Truyenfull from './helpers/Crawler/Truyenfull';
 import TruyenCV from './helpers/Crawler/TruyenCV';
 import TruyenYY from './helpers/Crawler/TruyenYY';
 import MyRegEx from './helpers/MyRegEx';
+import cors from 'cors';
 
 const app = express();
 const port = 8000;
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json());
+app.use(cors());
 
 app.get(`/GetStoryInfo`, async (req, res) => {
   console.log("U GUD")
-  let result =  await Truyenfull.crawl1Chapter(req.query.category, 1019);
+  let result =  await Truyenfull.crawlAllStoryInfoAllPages(req.query.category);
   res.send(result);
 })
 
