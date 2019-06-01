@@ -14,7 +14,6 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.get(`/GetStoryInfo`, async (req, res) => {
-  console.log("U GUD")
   let result =  await Truyenfull.crawlAllStoryInfoAllPages(req.query.category);
   res.send(result);
 })
@@ -22,12 +21,18 @@ app.get(`/GetStoryInfo`, async (req, res) => {
 // console.log(Truyenfull.crawlAllChapters('tien-nghich', 1017, 1019));
 // Truyenfull.crawlAllChapters('tien-nghich', 1017, 1019);
 // Truyenfull.crawl1Chapter('tien-nghich', 1017);
+// Truyenfull.crawlPoster('tien-nghich');
 // Truyenfull.crawlAllStoryInfo1Page('tien-hiep', 3);
-// Truyenfull.crawlAllStoryInfoAllPages('trong-sinh');
+// Truyenfull.crawlAllStoryInfoAllPages('tien-hiep');
 // Truyenfull.writeTxt('tien-nghich', 1017, 1019);
 // Truyenfull.writeDoc('vu-dong-can-khon', 1017, 1019);
 // Truyenfull.writeDoc('linh-vu-thien-ha', 1017, 1019);
-// myregex.convertUTF8('Dị Nhân Tu Chân Đa Thế Giới');
+// MyRegEx.convertUTF8('Sư Phụ Con Yêu Người');
+console.log('ụ' == 'ụ')
+console.log('ư' == 'ư')
+// console.log('Sư Phụ Con Yêu Người'== 'Sư Phụ Con Yêu Người')
+// console.log('Sư Phụ Con Yêu Người'== 'Sư Phụ Con Yêu Người')
+// MyRegEx.convertUTF8('Sư Phụ Con Yêu Người'.toString())
 // TruyenCV.crawl1Page('tien-nghich', 1000);
 // TruyenYY.crawl1Page('tien-nghich', 1020);
 

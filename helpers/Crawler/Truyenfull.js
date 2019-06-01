@@ -3,6 +3,7 @@ import DomParser from 'dom-parser';
 import jsdom from 'jsdom';
 import officegen from 'officegen';
 import fs from 'fs';
+import MyRegEx from '../MyRegEx';
 
 const parser = new DomParser();
 const { JSDOM } = jsdom;
@@ -29,7 +30,7 @@ class Truyenfull {
         .replace(/<br>&nbsp;<br>/g, '<<')
         .replace(/<br><br>/g, '<<')
         .split('<<');
-        
+
       console.log(`Đang tải chương ${index}...`);
 
       return ({
@@ -190,12 +191,23 @@ class Truyenfull {
 
       let storyList1Page = [];
       for (const node of nodeListArray) {
+        const title = node.getElementsByClassName('truyen-title')[0]
+          .getElementsByTagName('a')[0]
+          .innerHTML;
+        const author = node.getElementsByClassName('author')[0].innerHTML
+          .split('</span> ')[1];
+        const latestChap = node.getElementsByClassName('col-xs-2 text-info')[0].getElementsByTagName('a')[0].innerHTML
+          .split('</span>')[2]
+        const titleNew = MyRegEx.convertUTF8(title);
+        // console.log(`TITLE NEW: ${titleNew}`);
+        const poster = await this.crawlPoster(titleNew);
+        // console.log(`POSTER: ${poster}`);
+
         storyList1Page.push({
-          'title': node.getElementsByClassName('truyen-title')[0].getElementsByTagName('a')[0].innerHTML,
-          'author': node.getElementsByClassName('author')[0].innerHTML
-            .split('</span> ')[1],
-          'latestChap': node.getElementsByClassName('col-xs-2 text-info')[0].getElementsByTagName('a')[0].innerHTML
-            .split('</span>')[2],
+          'title': title,
+          'author': author,
+          'latestChap': latestChap,
+          'poster': poster,
         })
       }
 
@@ -233,6 +245,22 @@ class Truyenfull {
 
     console.log(`==> Tổng cộng có ${storyListAllPages.length} truyện thuộc thể loại ${category}`);
     return storyListAllPages;
+  }
+
+  static async crawlPoster(title) {
+    try {
+      const res = await https.get(`${truyenFullURL}${title}/`);
+      const ele = parser.parseFromString(res.text, 'text/html');
+      const dom = new JSDOM(ele.rawHTML);
+
+      const poster = dom.window.document
+        .getElementsByClassName('book')[0]
+        .getElementsByTagName('img')[0].src;
+
+      return poster;
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
 
