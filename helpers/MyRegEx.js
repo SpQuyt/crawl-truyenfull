@@ -1,8 +1,13 @@
 class MyRegEx {
   static convertUTF8(string) {
-    const newString = string.toLowerCase()
-      .replace(/[|]/g, '')
-      .replace(/, /g, ', ')
+    const newString = string.normalize().toLowerCase()
+      .replace(/:/g, '')
+      .replace(/"/g, '')
+      .replace(/'/g, '')
+      .replace(/!/g, '')
+      .replace(/,/g, '')
+      .replace(/\(|\)/g, '')
+      .replace(/\[|\]/g, '')
       .replace(/ - /g, '-')
       .replace(/ /g, '-')
       .replace(/ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ/g, 'a')
@@ -19,7 +24,7 @@ class MyRegEx {
 
     console.log(string);
     console.log(newString);
-    return(newString);
+    return (newString);
   }
 }
 

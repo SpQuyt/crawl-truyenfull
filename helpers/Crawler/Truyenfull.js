@@ -3,7 +3,6 @@ import DomParser from 'dom-parser';
 import jsdom from 'jsdom';
 import officegen from 'officegen';
 import fs from 'fs';
-import MyRegEx from '../MyRegEx';
 
 const parser = new DomParser();
 const { JSDOM } = jsdom;
@@ -198,10 +197,10 @@ class Truyenfull {
           .split('</span> ')[1];
         const latestChap = node.getElementsByClassName('col-xs-2 text-info')[0].getElementsByTagName('a')[0].innerHTML
           .split('</span>')[2]
-        const titleNew = MyRegEx.convertUTF8(title);
-        // console.log(`TITLE NEW: ${titleNew}`);
-        const poster = await this.crawlPoster(titleNew);
-        // console.log(`POSTER: ${poster}`);
+        const storyURL = node.getElementsByClassName('truyen-title')[0]
+          .getElementsByTagName('a')[0]
+          .getAttribute('href');
+        const poster = await this.crawlPoster(storyURL);
 
         storyList1Page.push({
           'title': title,
@@ -247,9 +246,40 @@ class Truyenfull {
     return storyListAllPages;
   }
 
-  static async crawlPoster(title) {
+  static async crawlAllStoryInfoManyPages(category, beginIndex, endIndex) {
+    let lastPageIndex = null;
     try {
-      const res = await https.get(`${truyenFullURL}${title}/`);
+      lastPageIndex = await this.getLastPageIndex(category);
+      if (lastPageIndex < endIndex) {
+        endIndex = lastPageIndex;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+
+    let storyListAllPages = [];
+    try {
+      for (let i = beginIndex; i <= endIndex; i++) {
+        let newPage = await this.crawlAllStoryInfo1Page(category, i)
+        if (i % 5 == 0) {
+          await sleep(100);
+        }
+
+        for (const story of newPage) {
+          storyListAllPages.push(story);
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+
+    console.log(`==> Tổng cộng có ${storyListAllPages.length} truyện thuộc thể loại ${category}`);
+    return storyListAllPages;
+  }
+
+  static async crawlPoster(storyURL) {
+    try {
+      const res = await https.get(`${storyURL}`);
       const ele = parser.parseFromString(res.text, 'text/html');
       const dom = new JSDOM(ele.rawHTML);
 
