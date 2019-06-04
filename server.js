@@ -1,29 +1,30 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import Truyenfull from './helpers/Crawler/Truyenfull';
-import TruyenCV from './helpers/Crawler/TruyenCV';
-import TruyenYY from './helpers/Crawler/TruyenYY';
-import MyRegEx from './helpers/MyRegEx';
 import cors from 'cors';
+import mongoose from 'mongoose';
+mongoose.Promise = global.Promise;
 
 const app = express();
 const port = 8000;
 
+/*Load Controllers*/
+const storyController = require('./controllers/storyController');
+
+/*Load Middlewares */
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json());
 app.use(cors());
 
-app.get(`/story/addToDB`, async (req, res) => {
-  let categoryList = await Truyenfull.crawlCategoryList();
-  let result =  await Truyenfull.crawlAllPagesOfCategory(MyRegEx.convertUTF8(categoryList[0]));
-  // let result =  await Truyenfull.crawlAllStoryInfoAllPages(req.query.category);
-  // let result = await Truyenfull.crawlAllStoryInfo1Page(req.query.category, 3);
-  res.send(result);
-})
+const urlDB = 'mongodb://admin123:admin123@ds231537.mlab.com:31537/crawl_truyenfull';
+mongoose.connect(urlDB, { useNewUrlParser: true })
+let db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function () {
+  console.log("DB OK")
+});
 
-
-Truyenfull.test();
-
+// Truyenfull.test();
 // Truyenfull.crawlAllChapters('tien-nghich', 1017, 1019);
 // Truyenfull.crawl1Chapter('tien-nghich', 1017);
 // Truyenfull.crawlPoster('tien-nghich');
@@ -36,11 +37,9 @@ Truyenfull.test();
 // Truyenfull.writeDoc('linh-vu-thien-ha', 1017, 1019);
 // Truyenfull.crawlCategoryList();
 // MyRegEx.convertUTF8('Sư Phụ Con Yêu Người');
-// console.log('ụ'.normalize() == 'ụ')
-// console.log('ư' == 'ư')
-// MyRegEx.convertUTF8('Sư Phụ Con Yêu Người'.toString())
 // TruyenCV.crawl1Page('tien-nghich', 1000);
-// TruyenYY.crawl1Page('tien-nghich', 1020);
+
+storyController(mongoose, app);
 
 app.listen(port, (err) => {
   if (err) console.log(err);

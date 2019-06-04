@@ -3,11 +3,11 @@ const ObjectId = require('mongodb').ObjectID;
 var Schema = mongoose.Schema;
 
 var storySchema = new Schema({
-  "title": String,
+  "title": { type : String , unique : true, dropDups: true },
   "author": String,
   "description": String,
   "poster": String,
-  "category": Array,
+  "categoryList": Array,
   "status": String,
 })
 

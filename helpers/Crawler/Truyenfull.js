@@ -299,10 +299,20 @@ class Truyenfull {
         .getElementsByTagName('div')[domInfoArray.length - 1]
         .getElementsByTagName('span')[0].innerHTML.normalize();
 
+      const description = Array.from(dom.window.document
+        .getElementsByClassName('col-xs-12 col-sm-8 col-md-8 desc')[0]
+        .getElementsByTagName('div'))[3]
+        .innerHTML
+        .replace(/<b>|<\/b>/g, '')
+        .replace(/<i>|<\/i>/g, '')
+        .replace(/<br>|<\/br>/g, '\n')
+        .normalize();
+
       return ({
         title: title,
         author: author,
         poster: poster,
+        description: description,
         categoryList: categoryList,
         status: status,
       });
