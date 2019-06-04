@@ -2,6 +2,7 @@ import https from 'superagent';
 import DomParser from 'dom-parser';
 import jsdom from 'jsdom';
 import officegen from 'officegen';
+import MyRegEx from '../MyRegEx';
 import fs from 'fs';
 
 const parser = new DomParser();
@@ -178,7 +179,7 @@ class Truyenfull {
     }
   }
 
-  static async crawlAllStoryInfo1Page(category, page) {
+  static async crawl1PageOfCategory(category, page) {
     try {
       const res = await https.get(`${truyenFullURL}the-loai/${category}/trang-${page}/`);
       const ele = parser.parseFromString(res.text, 'text/html');
@@ -190,24 +191,14 @@ class Truyenfull {
 
       let storyList1Page = [];
       for (const node of nodeListArray) {
-        const title = node.getElementsByClassName('truyen-title')[0]
-          .getElementsByTagName('a')[0]
-          .innerHTML;
-        const author = node.getElementsByClassName('author')[0].innerHTML
-          .split('</span> ')[1];
-        const latestChap = node.getElementsByClassName('col-xs-2 text-info')[0].getElementsByTagName('a')[0].innerHTML
-          .split('</span>')[2]
+        // const latestChap = node.getElementsByClassName('col-xs-2 text-info')[0].getElementsByTagName('a')[0].innerHTML
+        //   .split('</span>')[2]
         const storyURL = node.getElementsByClassName('truyen-title')[0]
           .getElementsByTagName('a')[0]
           .getAttribute('href');
-        const poster = await this.crawlPoster(storyURL);
+        const story = await this.crawlStoryInfo(storyURL);
 
-        storyList1Page.push({
-          'title': title,
-          'author': author,
-          'latestChap': latestChap,
-          'poster': poster,
-        })
+        storyList1Page.push(story)
       }
 
       console.log(`Đang tải thông tin thể loại ${category} ở trang ${page}`);
@@ -218,7 +209,7 @@ class Truyenfull {
     }
   }
 
-  static async crawlAllStoryInfoAllPages(category) {
+  static async crawlAllPagesOfCategory(category) {
     let lastPageIndex = null;
     try {
       lastPageIndex = await this.getLastPageIndex(category);
@@ -229,7 +220,7 @@ class Truyenfull {
     let storyListAllPages = [];
     try {
       for (let i = 1; i <= lastPageIndex; i++) {
-        let newPage = await this.crawlAllStoryInfo1Page(category, i)
+        let newPage = await this.crawl1PageOfCategory(category, i)
         if (i % 5 == 0) {
           await sleep(100);
         }
@@ -246,7 +237,7 @@ class Truyenfull {
     return storyListAllPages;
   }
 
-  static async crawlAllStoryInfoManyPages(category, beginIndex, endIndex) {
+  static async crawlManyPagesOfCategory(category, beginIndex, endIndex) {
     let lastPageIndex = null;
     try {
       lastPageIndex = await this.getLastPageIndex(category);
@@ -260,7 +251,7 @@ class Truyenfull {
     let storyListAllPages = [];
     try {
       for (let i = beginIndex; i <= endIndex; i++) {
-        let newPage = await this.crawlAllStoryInfo1Page(category, i)
+        let newPage = await this.crawl1PageOfCategory(category, i)
         if (i % 5 == 0) {
           await sleep(100);
         }
@@ -277,7 +268,7 @@ class Truyenfull {
     return storyListAllPages;
   }
 
-  static async crawlPoster(storyURL) {
+  static async crawlStoryInfo(storyURL) {
     try {
       const res = await https.get(`${storyURL}`);
       const ele = parser.parseFromString(res.text, 'text/html');
@@ -286,11 +277,68 @@ class Truyenfull {
       const poster = dom.window.document
         .getElementsByClassName('book')[0]
         .getElementsByTagName('img')[0].src;
+      const title = dom.window.document
+        .getElementsByClassName('title')[0].innerHTML.normalize();
+      const author = dom.window.document
+        .getElementsByClassName('info')[0]
+        .getElementsByTagName('div')[0]
+        .getElementsByTagName('a')[0].innerHTML.normalize();
 
-      return poster;
+      const domHTMLArray = Array.from(dom.window.document
+        .getElementsByClassName('info')[0]
+        .getElementsByTagName('div')[1].getElementsByTagName('a'));
+      const categoryList = domHTMLArray.map(dom => {
+        return dom.innerHTML.normalize();
+      })
+
+      const domInfoArray = Array.from(dom.window.document
+        .getElementsByClassName('info')[0]
+        .getElementsByTagName('div'));
+      const status = dom.window.document
+        .getElementsByClassName('info')[0]
+        .getElementsByTagName('div')[domInfoArray.length - 1]
+        .getElementsByTagName('span')[0].innerHTML.normalize();
+
+      return ({
+        title: title,
+        author: author,
+        poster: poster,
+        categoryList: categoryList,
+        status: status,
+      });
+    } catch (err) {
+      console.log();
+    }
+  }
+
+  static async crawlCategoryList() {
+    let list = [];
+    try {
+      const res = await https.get(`${truyenFullURL}`);
+      const ele = parser.parseFromString(res.text, 'text/html');
+      const dom = new JSDOM(ele.rawHTML);
+
+      const domHTMLArray = Array.from(dom.window.document
+        .getElementsByClassName('list list-truyen list-cat col-xs-12')[0]
+        .getElementsByClassName('col-xs-6'))
+
+      list = domHTMLArray.map((dom) => {
+        return dom.getElementsByTagName('a')[0].innerHTML.normalize();
+      })
+
+      return list;
     } catch (err) {
       console.log(err);
     }
+  }
+
+  static async test() {
+    let list = [];
+    let categoryList = await this.crawlCategoryList();
+    for (var i = 0; i < categoryList.length; i++) {
+      list.push(await this.crawlAllPagesOfCategory(MyRegEx.convertUTF8(categoryList[i])));
+    }
+    console.log(list);
   }
 }
 

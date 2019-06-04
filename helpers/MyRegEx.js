@@ -22,7 +22,6 @@ class MyRegEx {
       .replace(/đ/g, 'd')
       .replace(/ý/g, 'y').replace(/ỳ/g, 'y').replace(/ỷ/g, 'y').replace(/ỹ/g, 'y').replace(/ỵ/g, 'y')
 
-    console.log(string);
     console.log(newString);
     return (newString);
   }

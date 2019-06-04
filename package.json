@@ -19,6 +19,7 @@
     "fs": "0.0.1-security",
     "g": "^2.0.1",
     "jsdom": "^15.1.0",
+    "mongoose": "^5.5.12",
     "officegen": "^0.6.0",
     "superagent": "^5.0.5"
   }

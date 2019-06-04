@@ -13,22 +13,28 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json());
 app.use(cors());
 
-app.get(`/GetStoryInfo`, async (req, res) => {
-  let result =  await Truyenfull.crawlAllStoryInfoManyPages(req.query.category, 3, 14);
+app.get(`/story/addToDB`, async (req, res) => {
+  let categoryList = await Truyenfull.crawlCategoryList();
+  let result =  await Truyenfull.crawlAllPagesOfCategory(MyRegEx.convertUTF8(categoryList[0]));
   // let result =  await Truyenfull.crawlAllStoryInfoAllPages(req.query.category);
   // let result = await Truyenfull.crawlAllStoryInfo1Page(req.query.category, 3);
   res.send(result);
 })
 
-// console.log(Truyenfull.crawlAllChapters('tien-nghich', 1017, 1019));
+
+Truyenfull.test();
+
 // Truyenfull.crawlAllChapters('tien-nghich', 1017, 1019);
 // Truyenfull.crawl1Chapter('tien-nghich', 1017);
 // Truyenfull.crawlPoster('tien-nghich');
-// Truyenfull.crawlAllStoryInfo1Page('tien-hiep', 3);
-// Truyenfull.crawlAllStoryInfoAllPages('tien-hiep');
+// Truyenfull.crawl1PageOfCategory('tien-hiep', 3);
+// Truyenfull.crawlAllPagesOfCategory('tien-hiep');
+// Truyenfull.crawl1PageOfCategory(MyRegEx.convertUTF8('tien-hiep'), 1);
+// Truyenfull.crawlStoryInfo(`https://truyenfull.vn/gioi-than/`);
 // Truyenfull.writeTxt('tien-nghich', 1017, 1019);
 // Truyenfull.writeDoc('vu-dong-can-khon', 1017, 1019);
 // Truyenfull.writeDoc('linh-vu-thien-ha', 1017, 1019);
+// Truyenfull.crawlCategoryList();
 // MyRegEx.convertUTF8('Sư Phụ Con Yêu Người');
 // console.log('ụ'.normalize() == 'ụ')
 // console.log('ư' == 'ư')
