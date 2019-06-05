@@ -295,8 +295,9 @@ class Truyenfull {
         .innerHTML
         .replace(/<b>|<\/b>/g, '')
         .replace(/<i>|<\/i>/g, '')
-        .replace(/<br>|<\/br>/g, '\n')
-        .normalize();
+        .replace(/&nbsp;/g,' ')
+        .normalize()
+        .split('<br>');  
 
       return ({
         title: title,

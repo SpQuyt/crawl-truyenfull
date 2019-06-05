@@ -8,7 +8,7 @@ module.exports = (mongoose, app) => {
 
   app.get(`/story/getAllStories`, async (req, res) => {
     Story.find()
-    .limit(100)
+    .limit(300)
     .exec((err, result) => {
       if (err) console.log(err);
       res.send(result);

@@ -8,11 +8,7 @@ module.exports = (mongoose, app) => {
   const Story = mongoose.model('Story', storySchema, 'stories')
 
   app.get(`/crawl/1Genre1Page`, async (req, res) => {
-    // let categoryList = await Truyenfull.crawlCategoryList();
-    // let queryResult = await Truyenfull.crawlManyPagesOfCategory(req.query.category, 1, 3);
-    let queryResult = await Truyenfull.crawlAllPagesOfCategory(req.query.category);
-    // let result =  await Truyenfull.crawlAllStoryInfoAllPages(req.query.category);
-    let result = await Truyenfull.crawlAllStoryInfo1Page(req.query.category, req.query.index);
+    let queryResult = await Truyenfull.crawl1PageOfCategory(req.query.category, req.query.index);
 
     for (const story of queryResult) {
       const newStory = new Story({
@@ -35,7 +31,7 @@ module.exports = (mongoose, app) => {
     }
 
     console.log("DONE!")
-
+    res.send("DONE!")
   })
 
   app.get(`/crawl/1GenreAllPages`, async (req, res) => {
