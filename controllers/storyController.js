@@ -4,37 +4,15 @@ import Truyenfull from '../helpers/Crawler/Truyenfull';
 
 
 module.exports = (mongoose, app) => {
-  const Story = mongoose.model('Story', storySchema)
+  const Story = mongoose.model('Story', storySchema, 'stories')
 
-  app.get(`/stories/addToDB`, async (req, res) => {
-    // let categoryList = await Truyenfull.crawlCategoryList();
-    // let queryResult = await Truyenfull.crawlManyPagesOfCategory(req.query.category, 1, 3);
-    let queryResult = await Truyenfull.crawlAllPagesOfCategory(req.query.category);
-    // let result =  await Truyenfull.crawlAllStoryInfoAllPages(req.query.category);
-    // let result = await Truyenfull.crawlAllStoryInfo1Page(req.query.category, 3);
-
-    for (const story of queryResult) {
-      const newStory = new Story({
-        "title": story.title,
-        "author": story.author,
-        "description": story.description,
-        "poster": story.poster,
-        "categoryList": story.categoryList,
-        "status": story.status,
-      });
-  
-      newStory.save((err, result) => {
-        if (err) {
-          if (err.code == 11000) console.log(`==> ${story.title} đã tồn tại trong database.`);
-        }
-        else {
-          console.log(`Đã thêm ${story.title} vào database.`);
-        } 
-      })
-    }
-
-  console.log("DONE!")
-    
+  app.get(`/story/getAllStories`, async (req, res) => {
+    Story.find()
+    .limit(100)
+    .exec((err, result) => {
+      if (err) console.log(err);
+      res.send(result);
+    })     
   })
 
   // app.get('/users/:id/bills', (req, res) => {

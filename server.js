@@ -10,6 +10,8 @@ const port = 8000;
 
 /*Load Controllers*/
 const storyController = require('./controllers/storyController');
+const crawlController = require('./controllers/crawlController');
+const categoryController = require('./controllers/categoryController');
 
 /*Load Middlewares */
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -30,6 +32,7 @@ db.once('open', function () {
 // Truyenfull.crawlPoster('tien-nghich');
 // Truyenfull.crawl1PageOfCategory('tien-hiep', 3);
 // Truyenfull.crawlAllPagesOfCategory('tien-hiep');
+// Truyenfull.crawlManyPagesOfCategory('ngon-tinh', 1, 3);
 // Truyenfull.crawl1PageOfCategory(MyRegEx.convertUTF8('tien-hiep'), 1);
 // Truyenfull.crawlStoryInfo(`https://truyenfull.vn/gioi-than/`);
 // Truyenfull.writeTxt('tien-nghich', 1017, 1019);
@@ -40,6 +43,8 @@ db.once('open', function () {
 // TruyenCV.crawl1Page('tien-nghich', 1000);
 
 storyController(mongoose, app);
+crawlController(mongoose, app);
+categoryController(mongoose, app);
 
 app.listen(port, (err) => {
   if (err) console.log(err);

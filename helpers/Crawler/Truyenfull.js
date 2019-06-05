@@ -238,16 +238,6 @@ class Truyenfull {
   }
 
   static async crawlManyPagesOfCategory(category, beginIndex, endIndex) {
-    let lastPageIndex = null;
-    try {
-      lastPageIndex = await this.getLastPageIndex(category);
-      if (lastPageIndex < endIndex) {
-        endIndex = lastPageIndex;
-      }
-    } catch (err) {
-      console.log(err);
-    }
-
     let storyListAllPages = [];
     try {
       for (let i = beginIndex; i <= endIndex; i++) {
