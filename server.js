@@ -35,6 +35,7 @@ db.once('open', function () {
 // Truyenfull.crawlManyPagesOfCategory('ngon-tinh', 1, 3);
 // Truyenfull.crawl1PageOfCategory(MyRegEx.convertUTF8('tien-hiep'), 1);
 // Truyenfull.crawlStoryInfo(`https://truyenfull.vn/gioi-than/`);
+// Truyenfull.getLastChapterIndexStory('du-thien-dong-thu');
 // Truyenfull.writeTxt('tien-nghich', 1017, 1019);
 // Truyenfull.writeDoc('vu-dong-can-khon', 1017, 1019);
 // Truyenfull.writeDoc('linh-vu-thien-ha', 1017, 1019);

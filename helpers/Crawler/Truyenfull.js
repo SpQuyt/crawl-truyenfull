@@ -31,7 +31,7 @@ class Truyenfull {
         .replace(/<br><br>/g, '<<')
         .split('<<');
 
-      console.log(`Đang tải chương ${index}...`);
+      console.log(`Đang tải ${title} chương ${index}...`);
 
       return ({
         header: header,
@@ -50,13 +50,40 @@ class Truyenfull {
     }
   }
 
-  static async crawlAllChapters(title, beginChap, endChap) {
+  static async crawlManyChapters(title, beginChap, endChap) {
     let chapterList = [];
     for (var i = beginChap; i <= endChap; i++) {
       let chapter = await this.crawl1Chapter(title, i);
 
       if (i % 5 == 0) {
         await sleep(3000);
+      }
+
+      if (chapter == null) {
+        break;
+      }
+      else {
+        chapterList.push(chapter);
+      }
+    }
+
+    return chapterList;
+  }
+
+  static async crawlAllChapters(title) {
+    let lastPageIndex = null;
+    try {
+      lastPageIndex = await this.getLastChapterIndexStory(title);
+    } catch (err) {
+      console.log(err);
+    }
+
+    let chapterList = [];
+    for (var i = 1; i <= lastPageIndex; i++) {
+      let chapter = await this.crawl1Chapter(title, i);
+
+      if (i % 3 == 0) {
+        await sleep(1000);
       }
 
       if (chapter == null) {
@@ -157,7 +184,7 @@ class Truyenfull {
     }
   }
 
-  static async getLastPageIndex(category) {
+  static async getLastPageIndexCategory(category) {
     let page = 1;
     try {
       const res = await https.get(`${truyenFullURL}the-loai/${category}/trang-${page}/`);
@@ -174,6 +201,63 @@ class Truyenfull {
         .split('Trang ')[1]
 
       return lastPageIndex;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  static async getLastChapterIndexStory(title) {
+    try {
+      const res = await https.get(`${truyenFullURL}${title}`);
+      const ele = parser.parseFromString(res.text, 'text/html');
+      const dom = new JSDOM(ele.rawHTML);
+
+      const domInfoArray = Array.from(dom.window.document
+        .getElementsByClassName('info')[0]
+        .getElementsByTagName('div'));
+      const status = dom.window.document
+        .getElementsByClassName('info')[0]
+        .getElementsByTagName('div')[domInfoArray.length - 1]
+        .getElementsByTagName('span')[0].innerHTML.normalize();
+
+      if (status == 'Full') {
+        const domPaginationArray = Array.from(dom.window.document
+          .getElementsByClassName('pagination pagination-sm')[0]
+          .getElementsByTagName('li'));
+        const lastPageURL = domPaginationArray[domPaginationArray.length - 2]
+          .getElementsByTagName('a')[0]
+          .getAttribute('href');
+        try {
+          const res2 = await https.get(`${lastPageURL}`);
+          const ele2 = parser.parseFromString(res2.text, 'text/html');
+          const dom2 = new JSDOM(ele2.rawHTML);
+
+          const domListChapterArray = Array.from(dom2.window.document
+            .getElementsByClassName('list-chapter')[0]
+            .getElementsByTagName('li'));
+          const lastChapterIndex = domListChapterArray[domListChapterArray.length - 1]
+            .getElementsByTagName('a')[0]
+            .getAttribute('href')
+            .split('chuong-')[1]
+            .replace('/','');
+
+          return lastChapterIndex;
+        } catch (err) {
+          console.log(err)
+        }
+      }
+      else if (status != 'Full'){
+        const domListChapterArray = Array.from(dom.window.document
+          .getElementsByClassName('l-chapters')[0]
+          .getElementsByTagName('li'));
+          const lastChapterIndex = domListChapterArray[0]
+          .getElementsByTagName('a')[0]
+          .getAttribute('href')
+          .split('chuong-')[1]
+          .replace('/','');
+
+        return lastChapterIndex;
+      }
     } catch (err) {
       console.log(err);
     }
@@ -295,9 +379,9 @@ class Truyenfull {
         .innerHTML
         .replace(/<b>|<\/b>/g, '')
         .replace(/<i>|<\/i>/g, '')
-        .replace(/&nbsp;/g,' ')
+        .replace(/&nbsp;/g, ' ')
         .normalize()
-        .split('<br>');  
+        .split('<br>');
 
       return ({
         title: title,
