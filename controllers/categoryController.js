@@ -12,10 +12,12 @@ module.exports = (mongoose, app) => {
     Story.find({
       // categoryList: { "$in" : ["Tiên Hiệp", "Trọng Sinh"]} 
       categoryList: req.query.category.normalize()
-    })
+    }).limit(100)
     .exec((err, result) => {
       if (err) console.log(err);
-      res.send(result);
+      res.json({
+        result: result
+      });
     })   
   })
 }

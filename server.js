@@ -32,7 +32,7 @@ db.once('open', function () {
 // Truyenfull.crawlPoster('tien-nghich');
 // Truyenfull.crawl1PageOfCategory('tien-hiep', 3);
 // Truyenfull.crawlAllPagesOfCategory('tien-hiep');
-// Truyenfull.crawlManyPagesOfCategory('ngon-tinh', 1, 3);
+// Truyenfull.crawlManyPagesOfCategory('ngon-tinh', 1, 2);
 // Truyenfull.crawl1PageOfCategory(MyRegEx.convertUTF8('tien-hiep'), 1);
 // Truyenfull.crawlStoryInfo(`https://truyenfull.vn/gioi-than/`);
 // Truyenfull.getLastChapterIndexStory('du-thien-dong-thu');
