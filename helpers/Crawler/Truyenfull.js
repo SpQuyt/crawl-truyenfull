@@ -1,7 +1,6 @@
 import https from 'superagent';
 import DomParser from 'dom-parser';
 import jsdom from 'jsdom';
-import officegen from 'officegen';
 import MyRegEx from '../MyRegEx';
 import fs from 'fs';
 
@@ -97,50 +96,50 @@ class Truyenfull {
     return chapterList;
   }
 
-  static async writeDoc(title, beginChap, endChap) {
-    let chapterList = await this.crawlAllChapters(title, beginChap, endChap);
-    let docx = officegen('docx');
+  // static async writeDoc(title, beginChap, endChap) {
+  //   let chapterList = await this.crawlAllChapters(title, beginChap, endChap);
+  //   let docx = officegen('docx');
 
-    for (const chapter of chapterList) {
-      let pObj = docx.createP();
-      //Add header
-      pObj.addText(chapter.header, { bold: true, font_size: 24 });
-      pObj.addLineBreak();
-      pObj.addLineBreak();
-      //Add body
-      for (const paragraph of chapter.body) {
-        pObj.addText(paragraph, { font_face: 'Arial' });
-        pObj.addLineBreak();
-        pObj.addLineBreak();
-      }
-      //Add page break
-      docx.putPageBreak();
-    }
+  //   for (const chapter of chapterList) {
+  //     let pObj = docx.createP();
+  //     //Add header
+  //     pObj.addText(chapter.header, { bold: true, font_size: 24 });
+  //     pObj.addLineBreak();
+  //     pObj.addLineBreak();
+  //     //Add body
+  //     for (const paragraph of chapter.body) {
+  //       pObj.addText(paragraph, { font_face: 'Arial' });
+  //       pObj.addLineBreak();
+  //       pObj.addLineBreak();
+  //     }
+  //     //Add page break
+  //     docx.putPageBreak();
+  //   }
 
-    //create folder
-    let pathFolder = `${__dirname}/../../downloadable/${title}/truyenfull`;
-    let pathDoc = `${__dirname}/../../downloadable/${title}/truyenfull/${title}-${beginChap}-${endChap}.docx`;
-    try {
-      fs.mkdirSync(pathFolder.split(`/${title}`)[0]);
-    } catch (err) {
-      console.log(`\nFolder downloadable đã tồn tại!`);
-    }
-    try {
-      fs.mkdirSync(pathFolder.split(`/truyenfull`)[0]);
-      fs.mkdirSync(pathFolder);
-    } catch (err) {
-      console.log('\nFolder truyenfull đã tồn tại!');
-    }
+  //   //create folder
+  //   let pathFolder = `${__dirname}/../../downloadable/${title}/truyenfull`;
+  //   let pathDoc = `${__dirname}/../../downloadable/${title}/truyenfull/${title}-${beginChap}-${endChap}.docx`;
+  //   try {
+  //     fs.mkdirSync(pathFolder.split(`/${title}`)[0]);
+  //   } catch (err) {
+  //     console.log(`\nFolder downloadable đã tồn tại!`);
+  //   }
+  //   try {
+  //     fs.mkdirSync(pathFolder.split(`/truyenfull`)[0]);
+  //     fs.mkdirSync(pathFolder);
+  //   } catch (err) {
+  //     console.log('\nFolder truyenfull đã tồn tại!');
+  //   }
 
-    //create .docx file at the destined path
-    let out = fs.createWriteStream(pathDoc);
-    out.on('error', (err) => {
-      console.log(err);
-    });
+  //   //create .docx file at the destined path
+  //   let out = fs.createWriteStream(pathDoc);
+  //   out.on('error', (err) => {
+  //     console.log(err);
+  //   });
 
-    docx.generate(out);
-    console.log('Đã xong file .docx!');
-  }
+  //   docx.generate(out);
+  //   console.log('Đã xong file .docx!');
+  // }
 
   static async writeTxt(title, beginChap, endChap) {
     let chapterList = await this.crawlAllChapters(title, beginChap, endChap);

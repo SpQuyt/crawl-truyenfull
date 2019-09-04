@@ -2,7 +2,7 @@
   "name": "truyenfullcrawler",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon --exec babel-node server.js"
@@ -13,15 +13,16 @@
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "body-parser": "^1.19.0",
+    "bufferutil": "^4.0.1",
+    "canvas": "^2.6.0",
     "cors": "^2.8.5",
     "dom-parser": "^0.1.6",
     "express": "^4.17.0",
     "fs": "0.0.1-security",
-    "g": "^2.0.1",
     "jsdom": "^15.1.0",
     "mongodb": "^3.2.6",
     "mongoose": "^5.5.12",
-    "officegen": "^0.6.0",
-    "superagent": "^5.0.5"
+    "superagent": "^5.0.5",
+    "utf-8-validate": "^5.0.2"
   }
 }

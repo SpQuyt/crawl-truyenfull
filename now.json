@@ -1,9 +1,19 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "server.js",
-        "use": "@now/node-server"
-      }
-    ]
-  }
+  "version": 2,
+  "builds": [
+    {
+      "src": "/server.js",
+      "use": "@now/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/category/getAllStoriesByCategory",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/story/getAllStories",
+      "dest": "/server.js"
+    }
+  ]
+}
