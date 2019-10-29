@@ -21,7 +21,7 @@
     "fs": "0.0.1-security",
     "jsdom": "^15.1.0",
     "mongodb": "^3.2.6",
-    "mongoose": "^5.5.12",
+    "mongoose": "^5.7.5",
     "superagent": "^5.0.5",
     "utf-8-validate": "^5.0.2"
   }
