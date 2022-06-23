@@ -19,7 +19,7 @@
     "dom-parser": "^0.1.6",
     "express": "^4.17.0",
     "fs": "0.0.1-security",
-    "jsdom": "^15.1.0",
+    "jsdom": "^16.5.0",
     "mongodb": "^3.2.6",
     "mongoose": "^5.5.12",
     "superagent": "^5.0.5",
